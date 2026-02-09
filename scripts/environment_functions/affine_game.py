@@ -4,7 +4,7 @@ Notes/TODO:
 - Gin Rummy is slow but working
 """
 
-def rollout_first_prompt_and_completion(prompts: list[str], trainer, max_turns: int = 30) -> dict[str, list]:
+def rollout_first_prompt_and_completion(prompts: list[str], trainer, max_turns: int = 50) -> dict[str, list]:
     from trl.experimental.openenv import generate_rollout_completions
     import os
     import random
@@ -51,6 +51,7 @@ def rollout_first_prompt_and_completion(prompts: list[str], trainer, max_turns: 
         # Create environment (POST /create) - ONLY ONCE
         try:
             print(f"Initializing environment on rank {rank} at {base_url}...")
+            # Use random opponent for faster training - proven to work in tournament
             payload = {"task_id": games_to_task_id_range[selected_game][0], "seed": 42, "opponent": "random"}
             create_res = requests.post(f"{base_url}/reset", json=payload, timeout=300)
             create_res.raise_for_status()
@@ -87,6 +88,7 @@ def rollout_first_prompt_and_completion(prompts: list[str], trainer, max_turns: 
         
         # --- Reset Environment (POST /reset) ---
         # Reuse existing env_id, just change the game
+        # Keep using random opponent for consistency
         payload = {"task_id": game_id, "seed": 42, "opponent": "random"}
         
         try:

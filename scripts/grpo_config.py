@@ -27,11 +27,11 @@ USE_CONFIG = "paged_adamw_8bit"
 OPTIMIZER_CONFIGS = {
     "paged_adamw_8bit": {
         "optimizer": "paged_adamw_8bit",
-        "warmup_steps": 35
+        "warmup_steps": 45
     },
     "paged_ademamix_8bit": {
         "optimizer": "paged_ademamix_8bit",
-        "warmup_steps": 50
+        "warmup_steps": 60
     }
 }
 
@@ -59,7 +59,7 @@ GRPO_CONFIG = {
         "vllm_gpu_memory_utilization": 0.4,
     },
     "2_4_b": {
-        "lr": 8e-6,
+        "lr": 9e-6,
         "distributed": "ddp",
         "gpu_count": 2,
         "batch_size": 42,
@@ -83,7 +83,7 @@ GRPO_CONFIG = {
         "vllm_gpu_memory_utilization": 0.4,
     },
     "6_9_b": {
-        "lr": 6e-6,
+        "lr": 7e-6,
         "distributed": "ddp",
         "gpu_count": 4,
         "batch_size": 20,
@@ -297,10 +297,10 @@ def get_training_json(train_info: dict) -> dict:
     
     print(f"config: {config}")
     run_config = {
-        "epoch_num": 3,
+        "epoch_num": 4 if "environment_name" in train_info["dataset_type"] else 3,
         "batch_size": config["batch_size"],
         "learning_rate": config["lr"],
-        "min_lr_rate": 0.25,
+        "min_lr_rate": 0.15 if "environment_name" in train_info["dataset_type"] else 0.25,
         "use_liger": get_use_liger(model_architecture),
         "optimizer": opt_config["optimizer"],
         "warmup_steps": opt_config["warmup_steps"],
@@ -311,9 +311,9 @@ def get_training_json(train_info: dict) -> dict:
         "request_path": train_info["request_path"],
         "distributed": config.get("distributed", "ddp"),
         "gradient_checkpointing": get_gradient_checkpointing(model_name),
-        "gradient_accumulation_steps": 4,
+        "gradient_accumulation_steps": 6 if "environment_name" in train_info["dataset_type"] else 4,
         "vllm_gpu_memory_utilization": 0.45 if config["gpu_count"] > 1 and "environment_name" in train_info["dataset_type"] else config.get("vllm_gpu_memory_utilization", 0.4),
-        "num_generations": 2,
+        "num_generations": 4 if "environment_name" in train_info["dataset_type"] else 2,
         "use_vllm": get_use_vllm(model_architecture, model_name),
         "tensor_parallel": config.get("tensor_parallel", False),
         "use_4bit": config.get("use_4bit", False),
