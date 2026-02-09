@@ -27,11 +27,11 @@ USE_CONFIG = "paged_adamw_8bit"
 OPTIMIZER_CONFIGS = {
     "paged_adamw_8bit": {
         "optimizer": "paged_adamw_8bit",
-        "warmup_steps": 45
+        "warmup_steps": 55
     },
     "paged_ademamix_8bit": {
         "optimizer": "paged_ademamix_8bit",
-        "warmup_steps": 60
+        "warmup_steps": 70
     }
 }
 
@@ -62,33 +62,33 @@ GRPO_CONFIG = {
         "lr": 9e-6,
         "distributed": "ddp",
         "gpu_count": 2,
-        "batch_size": 42,
-        "vllm_gpu_memory_utilization": 0.35,
+        "batch_size": 48,
+        "vllm_gpu_memory_utilization": 0.3,
         "use_lora": True,
     },
     "4_5_b": {
-        "lr": 6e-6,
+        "lr": 7e-6,
         "distributed": "ddp",
         "gpu_count": 2,
-        "batch_size": 42,
+        "batch_size": 46,
         "use_lora": True,
-        "vllm_gpu_memory_utilization": 0.4,
+        "vllm_gpu_memory_utilization": 0.3,
     },
     "5_6_b": {
-        "lr": 6e-6,
+        "lr": 7e-6,
         "distributed": "ddp",
         "gpu_count": 2,
-        "batch_size": 42,
+        "batch_size": 46,
         "use_lora": True,
-        "vllm_gpu_memory_utilization": 0.4,
+        "vllm_gpu_memory_utilization": 0.3,
     },
     "6_9_b": {
         "lr": 7e-6,
         "distributed": "ddp",
         "gpu_count": 4,
-        "batch_size": 20,
+        "batch_size": 24,
         "use_lora": True,
-        "vllm_gpu_memory_utilization": 0.55,
+        "vllm_gpu_memory_utilization": 0.3,
     },
     "9_12_b": {
         "lr": 6e-6,
@@ -297,10 +297,10 @@ def get_training_json(train_info: dict) -> dict:
     
     print(f"config: {config}")
     run_config = {
-        "epoch_num": 4 if "environment_name" in train_info["dataset_type"] else 3,
-        "batch_size": config["batch_size"],
-        "learning_rate": config["lr"],
-        "min_lr_rate": 0.15 if "environment_name" in train_info["dataset_type"] else 0.25,
+        "epoch_num": 5 if "environment_name" in train_info["dataset_type"] else 3,
+        "batch_size": int(config["batch_size"] * 1.3) if "environment_name" in train_info["dataset_type"] else config["batch_size"],
+        "learning_rate": config["lr"] * 1.1 if "environment_name" in train_info["dataset_type"] else config["lr"],
+        "min_lr_rate": 0.12 if "environment_name" in train_info["dataset_type"] else 0.25,
         "use_liger": get_use_liger(model_architecture),
         "optimizer": opt_config["optimizer"],
         "warmup_steps": opt_config["warmup_steps"],
@@ -311,9 +311,9 @@ def get_training_json(train_info: dict) -> dict:
         "request_path": train_info["request_path"],
         "distributed": config.get("distributed", "ddp"),
         "gradient_checkpointing": get_gradient_checkpointing(model_name),
-        "gradient_accumulation_steps": 6 if "environment_name" in train_info["dataset_type"] else 4,
-        "vllm_gpu_memory_utilization": 0.45 if config["gpu_count"] > 1 and "environment_name" in train_info["dataset_type"] else config.get("vllm_gpu_memory_utilization", 0.4),
-        "num_generations": 4 if "environment_name" in train_info["dataset_type"] else 2,
+        "gradient_accumulation_steps": 8 if "environment_name" in train_info["dataset_type"] else 4,
+        "vllm_gpu_memory_utilization": 0.3 if config["gpu_count"] > 1 and "environment_name" in train_info["dataset_type"] else config.get("vllm_gpu_memory_utilization", 0.4),
+        "num_generations": 6 if "environment_name" in train_info["dataset_type"] else 2,
         "use_vllm": get_use_vllm(model_architecture, model_name),
         "tensor_parallel": config.get("tensor_parallel", False),
         "use_4bit": config.get("use_4bit", False),
