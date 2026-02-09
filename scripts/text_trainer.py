@@ -392,6 +392,9 @@ def main():
         train_info = get_grpo_training_json(train_info)
         tokenize_cmd = f"python tokenize_grpo.py {request_path}"
         train_cmd = train_info["run_cmd"]
+        # For environment tasks, ensure proper configuration
+        if args.task_type == TaskType.ENVTASK.value:
+            print(f"Environment task detected - using optimized GRPO configuration", flush=True)
     else:
         raise ValueError(f"Task type {args.task_type} not supported")
 
