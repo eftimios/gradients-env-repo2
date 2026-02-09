@@ -171,7 +171,6 @@ cython_debug/
 #  *.iws
 
 # VS Code
-.vscode/
 
 # macOS
 .DS_Store
@@ -232,3 +231,5 @@ scripts/ru*.sh
 run_docker.sh
 run_test.py
 test.py
+temp_auto_push.bat
+temp_interactive_push.bat

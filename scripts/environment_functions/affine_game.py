@@ -4,7 +4,7 @@ Notes/TODO:
 - Gin Rummy is slow but working
 """
 
-def rollout_first_prompt_and_completion(prompts: list[str], trainer, max_turns: int = 50) -> dict[str, list]:
+def rollout_first_prompt_and_completion(prompts: list[str], trainer, max_turns: int = 60) -> dict[str, list]:
     from trl.experimental.openenv import generate_rollout_completions
     import os
     import random
